@@ -1,2 +1,3 @@
 examples/.metadata
 examples/*/Debug
+firmware/stm32g4-relay/Debug/
