@@ -17,12 +17,11 @@ typedef struct
 
 
 const gpio_tbl_t gpio_tbl[GPIO_MAX_CH] =
-    {
-        {GPIOE, GPIO_PIN_4,   _DEF_OUTPUT, GPIO_PIN_SET, GPIO_PIN_RESET,   _DEF_LOW , "LCD_TS_RST"  },      // 0. LCD_TS_RST
-        {GPIOB, GPIO_PIN_4,   _DEF_OUTPUT, GPIO_PIN_SET, GPIO_PIN_RESET,   _DEF_HIGH, "LCD_TS_INT"  },      // 1. LCD_TS_INT
-        {GPIOB, GPIO_PIN_12,  _DEF_OUTPUT, GPIO_PIN_SET, GPIO_PIN_RESET,   _DEF_HIGH, "SPI_FLASH_CS"},      // 2. SPI_FLASH_CS
-        {GPIOF, GPIO_PIN_6,   _DEF_OUTPUT, GPIO_PIN_SET, GPIO_PIN_RESET,   _DEF_HIGH, "LCD_RST"     },      // 3. LCD_RST
-    };
+{
+		{GPIOB, GPIO_PIN_9,   _DEF_OUTPUT, GPIO_PIN_SET, GPIO_PIN_RESET,   _DEF_LOW , "RELAY"  },      // 0. LCD_TS_RST
+		{GPIOB, GPIO_PIN_15,   _DEF_OUTPUT, GPIO_PIN_SET, GPIO_PIN_RESET,   _DEF_LOW , "RELAY2"  },      // 0. LCD_TS_RST
+
+};
 
 
 #ifdef _USE_HW_CLI
@@ -34,21 +33,6 @@ static void cliGpio(cli_args_t *args);
 bool gpioInit(void)
 {
   bool ret = true;
-
-
-  __HAL_RCC_GPIOB_CLK_ENABLE();
-  __HAL_RCC_GPIOC_CLK_ENABLE();
-  __HAL_RCC_GPIOG_CLK_ENABLE();
-  __HAL_RCC_GPIOD_CLK_ENABLE();
-  __HAL_RCC_GPIOE_CLK_ENABLE();
-  __HAL_RCC_GPIOF_CLK_ENABLE();
-
-
-  for (int i=0; i<GPIO_MAX_CH; i++)
-  {
-    gpioPinMode(i, gpio_tbl[i].mode);
-    gpioPinWrite(i, gpio_tbl[i].init_value);
-  }
 
 #ifdef _USE_HW_CLI
   cliAdd("gpio", cliGpio);

@@ -48,13 +48,13 @@ static bool buttonGetPin(uint8_t ch);
 
 
 static button_pin_t button_pin[BUTTON_MAX_CH] =
-{
-    {GPIOB, GPIO_PIN_3, GPIO_PIN_RESET},  // 0. BTN
-};
+    {
+        {BTN_GPIO_Port, BTN_Pin, GPIO_PIN_RESET},  // 0. BTN
+    };
 
 static const char *button_name[BUTTON_MAX_CH+1] = 
 {
-  "BTN",
+  "_BTN_SW",
   "Unknown",
 };
 
@@ -72,20 +72,7 @@ static button_event_t *event_tbl[BUTTON_EVENT_MAX];
 bool buttonInit(void)
 {
   bool ret = true;
-  GPIO_InitTypeDef GPIO_InitStruct = {0};
 
-
-//  __HAL_RCC_GPIOG_CLK_ENABLE();
-//
-//
-//  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-//  GPIO_InitStruct.Pull = GPIO_PULLUP;
-
-  for (int i=0; i<BUTTON_MAX_CH; i++)
-  {
-    GPIO_InitStruct.Pin = button_pin[i].pin;
-    HAL_GPIO_Init(button_pin[i].port, &GPIO_InitStruct);
-  }
 
   for (int i=0; i<BUTTON_MAX_CH; i++)
   {

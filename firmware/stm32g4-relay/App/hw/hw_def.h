@@ -40,9 +40,9 @@
 
 #define _USE_HW_SWTIMER
 #define      HW_SWTIMER_MAX_CH      8
-//
-//#define _USE_HW_GPIO
-//#define      HW_GPIO_MAX_CH         4
+
+#define _USE_HW_GPIO
+#define      HW_GPIO_MAX_CH         2
 //
 //#define _USE_HW_SPI
 //#define      HW_SPI_MAX_CH          1

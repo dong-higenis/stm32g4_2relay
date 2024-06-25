@@ -7,9 +7,7 @@ extern "C" {
 
 #include "hw_def.h"
 
-//============== COMMON ===============
-#include "qbuffer.h"
-#include "util.h"
+
 //==============   HW   ===============
 #include "led.h"
 #include "uart.h"
@@ -17,7 +15,10 @@ extern "C" {
 #include "log.h"
 #include "swtimer.h"
 #include "button.h"
-
+#include "gpio.h"
+	//============== COMMON ===============
+#include "qbuffer.h"
+#include "util.h"
 bool hwInit(void);
 
 

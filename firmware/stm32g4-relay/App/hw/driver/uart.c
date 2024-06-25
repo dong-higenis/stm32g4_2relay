@@ -111,8 +111,7 @@ bool uartOpen(uint8_t ch, uint32_t baud)
   switch(ch)
   {
     case _DEF_UART1:
-    case _DEF_UART2:
-    case _DEF_UART3:
+
       uart_tbl[ch].baud      = baud;
 
       uart_tbl[ch].p_huart   = uart_hw_tbl[ch].p_huart;
@@ -161,6 +160,10 @@ bool uartOpen(uint8_t ch, uint32_t baud)
         uart_tbl[ch].qbuffer.out = uart_tbl[ch].qbuffer.in;
       }
       break;
+
+    case _DEF_UART2:
+		case _DEF_UART3:
+			break;
   }
 
   return ret;
@@ -183,10 +186,15 @@ uint32_t uartAvailable(uint8_t ch)
   switch(ch)
   {
     case _DEF_UART1:
+		{
+			uart_tbl[ch].qbuffer.in = (uart_tbl[ch].qbuffer.len - ((DMA_Channel_TypeDef *)uart_tbl[ch].p_hdma_rx->Instance)->CNDTR);
+			ret = qbufferAvailable(&uart_tbl[ch].qbuffer);
+		}
+		break;
+
     case _DEF_UART2:
     case _DEF_UART3:
-      uart_tbl[ch].qbuffer.in = (uart_tbl[ch].qbuffer.len - ((DMA_Channel_TypeDef *)uart_tbl[ch].p_hdma_rx->Instance)->CNDTR);
-      ret = qbufferAvailable(&uart_tbl[ch].qbuffer);      
+
       break;
   }
 
@@ -219,9 +227,10 @@ uint8_t uartRead(uint8_t ch)
   switch(ch)
   {
     case _DEF_UART1:
+      qbufferRead(&uart_tbl[ch].qbuffer, &ret, 1);
+      break;
     case _DEF_UART2:
     case _DEF_UART3:
-      qbufferRead(&uart_tbl[ch].qbuffer, &ret, 1);
       break;
   }
   uart_tbl[ch].rx_cnt++;
@@ -237,12 +246,14 @@ uint32_t uartWrite(uint8_t ch, uint8_t *p_data, uint32_t length)
   switch(ch)
   {
     case _DEF_UART1:
+    	if (HAL_UART_Transmit(uart_tbl[ch].p_huart, p_data, length, 100) == HAL_OK)
+			{
+				ret = length;
+			}
+    	break;
     case _DEF_UART2:
     case _DEF_UART3:
-      if (HAL_UART_Transmit(uart_tbl[ch].p_huart, p_data, length, 100) == HAL_OK)
-      {
-        ret = length;
-      }
+
       break;
   }
   uart_tbl[ch].tx_cnt += ret;
