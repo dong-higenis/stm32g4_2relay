@@ -20,7 +20,7 @@ bool hwInit(void)
 	gpioInit();
 	ledInit();
 	buttonInit();
-
+	i2cInit();
 	uartInit();
   for (int i=0; i<HW_UART_MAX_CH; i++)
   {
@@ -32,6 +32,7 @@ bool hwInit(void)
   logPrintf("Booting..Ver  \t\t: %s\r\n", _DEF_FIRMWATRE_VERSION);
   logPrintf("Booting..Clock\t\t: %d Mhz\r\n", (int)HAL_RCC_GetSysClockFreq()/1000000);
   logPrintf("\n");
+
 
   return true;
 }

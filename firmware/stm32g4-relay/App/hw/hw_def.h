@@ -50,19 +50,18 @@
 //#define _USE_HW_SPI_FLASH
 //#define      HW_SPI_FLASH_ADDR      0x92000000
 //
-//#define _USE_HW_I2C
-//#define      HW_I2C_MAX_CH          2
-//#define      HW_I2C_CH_TOUCH        _DEF_I2C1
-//#define      HW_I2C_CH_EEPROM       _DEF_I2C2
+#define _USE_HW_I2C
+#define      HW_I2C_MAX_CH          1
+#define      HW_I2C_CH_EEPROM       _DEF_I2C1
 //
-//#define _USE_HW_EEPROM
-//#undef      HW_EEPROM_24LC16B
-//#define     HW_EEPROM_24LC256I
-//#ifdef  HW_EEPROM_24LC16B
-//#define      HW_EEPROM_MAX_SIZE     (2*1024)
-//#elif defined HW_EEPROM_24LC256I
-//#define      HW_EEPROM_MAX_SIZE     (32*1024)
-//#endif
+#define _USE_HW_EEPROM
+#define      HW_EEPROM_24LC16B
+#undef     HW_EEPROM_24LC256I
+#ifdef  HW_EEPROM_24LC16B
+#define      HW_EEPROM_MAX_SIZE     (2*1024)
+#elif defined HW_EEPROM_24LC256I
+#define      HW_EEPROM_MAX_SIZE     (32*1024)
+#endif
 //
 //#define      HW_EEPROM_ADDR_TOUCH   0
 //#define      HW_EEPROM_ADDR_PROFILE 64

@@ -16,9 +16,11 @@ extern "C" {
 #include "swtimer.h"
 #include "button.h"
 #include "gpio.h"
+#include "i2c.h"
 	//============== COMMON ===============
 #include "qbuffer.h"
 #include "util.h"
+
 bool hwInit(void);
 
 

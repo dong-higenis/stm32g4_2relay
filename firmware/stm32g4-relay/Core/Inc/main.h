@@ -73,12 +73,12 @@ void Error_Handler(void);
 #define U3_DE_GPIO_Port GPIOB
 #define RLY2_Pin GPIO_PIN_15
 #define RLY2_GPIO_Port GPIOB
+#define RLY_Pin GPIO_PIN_5
+#define RLY_GPIO_Port GPIOB
 #define U1_TXD_Pin GPIO_PIN_6
 #define U1_TXD_GPIO_Port GPIOB
 #define U1_RXD_Pin GPIO_PIN_7
 #define U1_RXD_GPIO_Port GPIOB
-#define RLY_Pin GPIO_PIN_9
-#define RLY_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 
