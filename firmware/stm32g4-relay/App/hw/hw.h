@@ -17,6 +17,9 @@ extern "C" {
 #include "button.h"
 #include "gpio.h"
 #include "i2c.h"
+#include "eeprom.h"
+#include "spi.h"
+#include "spi_flash.h"
 	//============== COMMON ===============
 #include "qbuffer.h"
 #include "util.h"

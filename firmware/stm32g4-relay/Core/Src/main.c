@@ -19,10 +19,11 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "dma.h"
+#include "fdcan.h"
 #include "i2c.h"
-#include "spi.h"
-#include "tim.h"
 #include "usart.h"
+#include "spi.h"
+#include "usb_device.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -96,8 +97,10 @@ int main(void)
   MX_USART3_UART_Init();
   MX_USART1_UART_Init();
   MX_SPI1_Init();
-  MX_TIM17_Init();
   MX_I2C2_Init();
+  MX_FDCAN1_Init();
+  MX_LPUART1_UART_Init();
+  MX_USB_Device_Init();
   /* USER CODE BEGIN 2 */
   hwInit();
   apInit();
@@ -131,8 +134,9 @@ void SystemClock_Config(void)
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI48|RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+  RCC_OscInitStruct.HSI48State = RCC_HSI48_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
   RCC_OscInitStruct.PLL.PLLM = RCC_PLLM_DIV2;

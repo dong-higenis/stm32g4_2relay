@@ -61,10 +61,16 @@ void Error_Handler(void);
 #define LED_GPIO_Port GPIOC
 #define BTN_Pin GPIO_PIN_14
 #define BTN_GPIO_Port GPIOC
-#define U2_TXD_Pin GPIO_PIN_2
-#define U2_TXD_GPIO_Port GPIOA
-#define U2_RXD_Pin GPIO_PIN_3
-#define U2_RXD_GPIO_Port GPIOA
+#define LPU_TXD_Pin GPIO_PIN_2
+#define LPU_TXD_GPIO_Port GPIOA
+#define LPU_RXD_Pin GPIO_PIN_3
+#define LPU_RXD_GPIO_Port GPIOA
+#define SPI1_CS_Pin GPIO_PIN_4
+#define SPI1_CS_GPIO_Port GPIOA
+#define SPI1_CLK_Pin GPIO_PIN_5
+#define SPI1_CLK_GPIO_Port GPIOA
+#define SW_Pin GPIO_PIN_0
+#define SW_GPIO_Port GPIOB
 #define U3_TXD_Pin GPIO_PIN_10
 #define U3_TXD_GPIO_Port GPIOB
 #define U3_RXD_Pin GPIO_PIN_11
@@ -73,12 +79,24 @@ void Error_Handler(void);
 #define U3_DE_GPIO_Port GPIOB
 #define RLY2_Pin GPIO_PIN_15
 #define RLY2_GPIO_Port GPIOB
-#define RLY_Pin GPIO_PIN_5
-#define RLY_GPIO_Port GPIOB
+#define SWDIO_Pin GPIO_PIN_13
+#define SWDIO_GPIO_Port GPIOA
+#define SWCLK_Pin GPIO_PIN_14
+#define SWCLK_GPIO_Port GPIOA
+#define U2_RXD_Pin GPIO_PIN_15
+#define U2_RXD_GPIO_Port GPIOA
+#define U2_TXD_Pin GPIO_PIN_3
+#define U2_TXD_GPIO_Port GPIOB
+#define RLY1_Pin GPIO_PIN_5
+#define RLY1_GPIO_Port GPIOB
 #define U1_TXD_Pin GPIO_PIN_6
 #define U1_TXD_GPIO_Port GPIOB
 #define U1_RXD_Pin GPIO_PIN_7
 #define U1_RXD_GPIO_Port GPIOB
+#define CAN_RXD_Pin GPIO_PIN_8
+#define CAN_RXD_GPIO_Port GPIOB
+#define CAN_TXD_Pin GPIO_PIN_9
+#define CAN_TXD_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 

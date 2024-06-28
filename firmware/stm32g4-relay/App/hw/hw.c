@@ -22,6 +22,7 @@ bool hwInit(void)
 	buttonInit();
 	i2cInit();
 	uartInit();
+	spiInit();
   for (int i=0; i<HW_UART_MAX_CH; i++)
   {
     uartOpen(i, 115200);
@@ -33,6 +34,7 @@ bool hwInit(void)
   logPrintf("Booting..Clock\t\t: %d Mhz\r\n", (int)HAL_RCC_GetSysClockFreq()/1000000);
   logPrintf("\n");
 
-
+  eepromInit();
+  spiFlashInit();
   return true;
 }

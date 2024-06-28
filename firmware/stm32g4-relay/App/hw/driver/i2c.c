@@ -23,10 +23,6 @@ static uint32_t i2c_freq[I2C_MAX_CH];
 static bool is_init = false;
 static bool is_begin[I2C_MAX_CH];
 
-
-extern I2C_HandleTypeDef hi2c1;
-extern I2C_HandleTypeDef hi2c4;
-
 typedef struct
 {
   I2C_TypeDef       *p_i2c;
@@ -40,10 +36,9 @@ typedef struct
 } i2c_tbl_t;
 
 static i2c_tbl_t i2c_tbl[I2C_MAX_CH] =
-    {
-        { I2C1, &hi2c1, GPIOB, GPIO_PIN_6,  GPIOB, GPIO_PIN_7},
-        { I2C4, &hi2c4, GPIOD, GPIO_PIN_12, GPIOD, GPIO_PIN_13},
-    };
+{
+    { I2C2, &hi2c2, GPIOA, GPIO_PIN_9,  GPIOA, GPIO_PIN_8},
+};
 
 
 

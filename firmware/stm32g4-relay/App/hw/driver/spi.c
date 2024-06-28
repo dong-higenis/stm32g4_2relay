@@ -27,8 +27,8 @@ typedef struct
 
 spi_t spi_tbl[SPI_MAX_CH];
 
-extern SPI_HandleTypeDef hspi2;
-extern DMA_HandleTypeDef hdma_spi2_rx;
+extern SPI_HandleTypeDef hspi1;
+extern DMA_HandleTypeDef hdma_spi1_rx;
 
 
 
@@ -60,10 +60,10 @@ bool spiBegin(uint8_t ch)
   switch(ch)
   {
     case _DEF_SPI1:
-      p_spi->h_spi = &hspi2;
-      p_spi->h_dma_rx = &hdma_spi2_rx;
+      p_spi->h_spi = &hspi1;
+      p_spi->h_dma_rx = &hdma_spi1_rx;
 
-      p_spi->h_spi->Instance              = SPI2;
+      p_spi->h_spi->Instance              = SPI1;
       p_spi->h_spi->Init.Mode             = SPI_MODE_MASTER;
       p_spi->h_spi->Init.Direction        = SPI_DIRECTION_2LINES;
       p_spi->h_spi->Init.DataSize         = SPI_DATASIZE_8BIT;
@@ -77,15 +77,6 @@ bool spiBegin(uint8_t ch)
       p_spi->h_spi->Init.CRCPolynomial    = 0;
 
       p_spi->h_spi->Init.NSSPMode                   = SPI_NSS_PULSE_DISABLE;
-      p_spi->h_spi->Init.NSSPolarity                = SPI_NSS_POLARITY_LOW;
-      p_spi->h_spi->Init.FifoThreshold              = SPI_FIFO_THRESHOLD_01DATA;
-      p_spi->h_spi->Init.TxCRCInitializationPattern = SPI_CRC_INITIALIZATION_ALL_ZERO_PATTERN;
-      p_spi->h_spi->Init.RxCRCInitializationPattern = SPI_CRC_INITIALIZATION_ALL_ZERO_PATTERN;
-      p_spi->h_spi->Init.MasterSSIdleness           = SPI_MASTER_SS_IDLENESS_01CYCLE;
-      p_spi->h_spi->Init.MasterInterDataIdleness    = SPI_MASTER_INTERDATA_IDLENESS_01CYCLE;
-      p_spi->h_spi->Init.MasterReceiverAutoSusp     = SPI_MASTER_RX_AUTOSUSP_DISABLE;
-      p_spi->h_spi->Init.MasterKeepIOState          = SPI_MASTER_KEEP_IO_STATE_DISABLE;
-      p_spi->h_spi->Init.IOSwap                     = SPI_IO_SWAP_DISABLE;
 
       __HAL_RCC_DMA1_CLK_ENABLE();
 

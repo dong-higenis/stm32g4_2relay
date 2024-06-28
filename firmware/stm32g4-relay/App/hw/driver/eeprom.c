@@ -76,7 +76,7 @@ bool eepromReadByte(uint32_t addr, uint8_t *p_data)
 #ifdef HW_EEPROM_24LC16B
   uint8_t block_addr = (addr >> 8) & 0x07;
   ret = i2cReadBytes(i2c_ch, i2c_addr | block_addr, addr & 0xFF, p_data, 1, 100);
-#elif defined HW_EEPROM_24LC256I
+#elif defined (HW_EEPROM_24LC64I) || (HW_EEPROM_24LC256I)
   ret = i2cReadA16Bytes(i2c_ch, i2c_addr, addr, p_data, 1, 100);
 #endif
 
@@ -96,7 +96,7 @@ bool eepromWriteByte(uint32_t addr, uint8_t data_in)
   uint8_t block_addr = (addr >> 8) & 0x07;
 
   ret = i2cWriteBytes(i2c_ch, i2c_addr | block_addr, addr & 0xFF, &data_in, 1, 10);
-#elif defined HW_EEPROM_24LC256I
+#elif defined (HW_EEPROM_24LC64I) || (HW_EEPROM_24LC256I)
   ret = i2cWriteA16Bytes(i2c_ch, i2c_addr, addr, &data_in, 1, 10);
 #endif
   pre_time = millis();
