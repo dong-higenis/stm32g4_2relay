@@ -70,13 +70,13 @@ bool spiBegin(uint8_t ch)
       p_spi->h_spi->Init.CLKPolarity      = SPI_POLARITY_LOW;
       p_spi->h_spi->Init.CLKPhase         = SPI_PHASE_1EDGE;
       p_spi->h_spi->Init.NSS              = SPI_NSS_SOFT;
-      p_spi->h_spi->Init.BaudRatePrescaler= SPI_BAUDRATEPRESCALER_2;
+      p_spi->h_spi->Init.BaudRatePrescaler= SPI_BAUDRATEPRESCALER_4;
       p_spi->h_spi->Init.FirstBit         = SPI_FIRSTBIT_MSB;
       p_spi->h_spi->Init.TIMode           = SPI_TIMODE_DISABLE;
       p_spi->h_spi->Init.CRCCalculation   = SPI_CRCCALCULATION_DISABLE;
-      p_spi->h_spi->Init.CRCPolynomial    = 0;
-
-      p_spi->h_spi->Init.NSSPMode                   = SPI_NSS_PULSE_DISABLE;
+      p_spi->h_spi->Init.CRCPolynomial    = 7;
+      p_spi->h_spi->Init.NSSPMode         = SPI_NSS_PULSE_ENABLE;
+      p_spi->h_spi->Init.CRCLength        = SPI_CRC_LENGTH_DATASIZE;
 
       __HAL_RCC_DMA1_CLK_ENABLE();
 

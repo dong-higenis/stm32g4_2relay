@@ -11,6 +11,8 @@
 #define _DEF_BOARD_NAME           "STM32G4-RELAY"
 
 
+//#define _USE_HW_FLASH
+
 #define _USE_HW_LED
 #define      HW_LED_MAX_CH          1
 
@@ -61,7 +63,7 @@
 #ifdef         HW_EEPROM_24LC16B
 #define           HW_EEPROM_MAX_SIZE     (2*1024)
 #elif defined (HW_EEPROM_24LC64I)
-#define           HW_EEPROM_MAX_SIZE    (8*1024)
+#define           HW_EEPROM_MAX_SIZE     (8*1024)
 #elif defined (HW_EEPROM_24LC256I)
 #define           HW_EEPROM_MAX_SIZE     (32*1024)
 #endif

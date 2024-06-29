@@ -36,5 +36,7 @@ bool hwInit(void)
 
   eepromInit();
   spiFlashInit();
+
+//  flashInit();
   return true;
 }

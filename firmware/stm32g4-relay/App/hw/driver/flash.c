@@ -137,10 +137,9 @@ bool flashErase(uint32_t addr, uint32_t length)
       HAL_StatusTypeDef status;
 
 
-      EraseInit.Sector       = start_sector;
-      EraseInit.NbSectors    = (end_sector - start_sector) + 1;
-      EraseInit.TypeErase    = FLASH_TYPEERASE_SECTORS;
-      EraseInit.VoltageRange = FLASH_VOLTAGE_RANGE_4;
+      EraseInit.Page       = start_sector;
+      EraseInit.NbPages    = (end_sector - start_sector) + 1;
+      EraseInit.TypeErase    = FLASH_TYPEERASE_PAGES;
       EraseInit.Banks        = flash_tbl[start_sector].bank;
 
       status = HAL_FLASHEx_Erase(&EraseInit, &SectorError);
@@ -201,7 +200,8 @@ bool flashWrite(uint32_t addr, uint8_t *p_data, uint32_t length)
     memcpy(&buf[0], (void *)write_addr, FLASH_PAGE_SIZE);
     memcpy(&buf[offset], &p_data[0], constrain(FLASH_PAGE_SIZE-offset, 0, length));
 
-    status = HAL_FLASH_Program(FLASH_TYPEPROGRAM_FLASHWORD, write_addr, (uint32_t)buf);
+//    status = HAL_FLASH_Program(FLASH_TYPEPROGRAM_FLASHWORD, write_addr, (uint32_t)buf);
+    status = HAL_FLASH_Program(FLASH_TYPEPROGRAM_FAST, write_addr, (uint32_t)buf);
     if (status != HAL_OK)
     {
       return false;
@@ -222,7 +222,7 @@ bool flashWrite(uint32_t addr, uint8_t *p_data, uint32_t length)
   {
     write_length = constrain(length - index, 0, FLASH_PAGE_SIZE);
 
-    status = HAL_FLASH_Program(FLASH_TYPEPROGRAM_FLASHWORD, addr + index, (uint32_t)&p_data[index]);
+    status = HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, addr + index, (uint32_t)&p_data[index]);
     if (status != HAL_OK)
     {
       ret = false;
@@ -238,7 +238,7 @@ bool flashWrite(uint32_t addr, uint8_t *p_data, uint32_t length)
       memcpy(&buf[0], (void *)write_addr, FLASH_PAGE_SIZE);
       memcpy(&buf[0], &p_data[index], offset);
 
-      status = HAL_FLASH_Program(FLASH_TYPEPROGRAM_FLASHWORD, write_addr, (uint32_t)buf);
+      status = HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, write_addr, (uint32_t)buf);
       if (status != HAL_OK)
       {
         return false;
