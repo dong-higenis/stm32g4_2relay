@@ -57,6 +57,7 @@
 
 /* External variables --------------------------------------------------------*/
 extern PCD_HandleTypeDef hpcd_USB_FS;
+extern FDCAN_HandleTypeDef hfdcan1;
 /* USER CODE BEGIN EV */
 
 /* USER CODE END EV */
@@ -85,7 +86,6 @@ void NMI_Handler(void)
 void HardFault_Handler(void)
 {
   /* USER CODE BEGIN HardFault_IRQn 0 */
-
   /* USER CODE END HardFault_IRQn 0 */
   while (1)
   {
@@ -211,6 +211,20 @@ void USB_LP_IRQHandler(void)
   /* USER CODE BEGIN USB_LP_IRQn 1 */
 
   /* USER CODE END USB_LP_IRQn 1 */
+}
+
+/**
+  * @brief This function handles FDCAN1 interrupt 0.
+  */
+void FDCAN1_IT0_IRQHandler(void)
+{
+  /* USER CODE BEGIN FDCAN1_IT0_IRQn 0 */
+
+  /* USER CODE END FDCAN1_IT0_IRQn 0 */
+  HAL_FDCAN_IRQHandler(&hfdcan1);
+  /* USER CODE BEGIN FDCAN1_IT0_IRQn 1 */
+
+  /* USER CODE END FDCAN1_IT0_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */

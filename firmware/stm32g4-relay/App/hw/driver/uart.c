@@ -62,7 +62,8 @@ const static uart_hw_t uart_hw_tbl[UART_MAX_CH] =
   {
     {"USART1 DEBUG ", USART1, &huart1, &hdma_usart1_rx, NULL, false},
     {"USART2 RS232 ", USART2, &huart2, &hdma_usart2_rx, NULL, false},
-    {"USART3 RS485 ", USART3, &huart3, &hdma_usart3_rx, NULL, false},
+    {"USART3 RS485 ", USART3, &huart3, &hdma_usart3_rx, NULL, true },
+//    {"LPUART       ", LP, &huart3, &hdma_usart3_rx, NULL, false},
   };
 
 bool uartInit(void)
@@ -111,7 +112,8 @@ bool uartOpen(uint8_t ch, uint32_t baud)
   switch(ch)
   {
     case _DEF_UART1:
-
+    case _DEF_UART2:
+    case _DEF_UART3:
       uart_tbl[ch].baud      = baud;
 
       uart_tbl[ch].p_huart   = uart_hw_tbl[ch].p_huart;
@@ -161,8 +163,7 @@ bool uartOpen(uint8_t ch, uint32_t baud)
       }
       break;
 
-    case _DEF_UART2:
-		case _DEF_UART3:
+
 			break;
   }
 

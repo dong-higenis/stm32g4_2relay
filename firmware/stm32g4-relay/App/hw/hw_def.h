@@ -66,6 +66,10 @@
 #define           HW_EEPROM_MAX_SIZE     (32*1024)
 #endif
 
+#define _USE_HW_CAN
+#define      HW_CAN_MAX_CH          1
+#define      HW_CAN_MSG_RX_BUF_MAX  32
+
 //#define _USE_HW_PWM
 //#define      HW_PWM_MAX_CH          1
 //
