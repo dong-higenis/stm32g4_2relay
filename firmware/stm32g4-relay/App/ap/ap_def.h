@@ -4,5 +4,6 @@
 
 #include "hw.h"
 
+#include "relay/relay.h"
 
 #endif

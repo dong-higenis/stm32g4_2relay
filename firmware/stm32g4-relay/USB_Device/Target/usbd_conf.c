@@ -1,13 +1,13 @@
 /* USER CODE BEGIN Header */
 /**
-  ******************************************************************************
-  * @file           : Target/usbd_conf.c
-  * @version        : v3.0_Cube
-  * @brief          : This file implements the board support package for the USB device library
+******************************************************************************
+  * @file           USB_Device/CDC_Standalone/USB_Device/Target/usbd_conf.c
+  * @author         MCD Application Team
+  * @brief          This file implements the board support package for the USB device library
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2024 STMicroelectronics.
+  * Copyright (c) 2019-2021 STMicroelectronics.
   * All rights reserved.
   *
   * This software is licensed under terms that can be found in the LICENSE file
@@ -19,6 +19,7 @@
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
+#include "hw.h"
 #include "stm32g4xx.h"
 #include "stm32g4xx_hal.h"
 #include "usbd_def.h"
@@ -36,11 +37,13 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
+/* Private variables ---------------------------------------------------------*/
 
 /* USER CODE END PV */
 
 PCD_HandleTypeDef hpcd_USB_FS;
 void Error_Handler(void);
+static bool is_connected = false;
 
 /* USER CODE BEGIN 0 */
 
@@ -57,9 +60,16 @@ void Error_Handler(void);
 static USBD_StatusTypeDef USBD_Get_USB_Status(HAL_StatusTypeDef hal_status);
 /* USER CODE BEGIN 1 */
 static void SystemClockConfig_Resume(void);
-
+extern void USBD_Clock_Config(void);
 /* USER CODE END 1 */
 extern void SystemClock_Config(void);
+
+
+
+bool USBD_is_connected(void)
+{
+  return is_connected;
+}
 
 /*******************************************************************************
                        LL Driver Callbacks (PCD -> USB Device Library)
@@ -72,27 +82,16 @@ static void HAL_PCD_MspInit(PCD_HandleTypeDef* pcdHandle)
 void HAL_PCD_MspInit(PCD_HandleTypeDef* pcdHandle)
 #endif /* USE_HAL_PCD_REGISTER_CALLBACKS */
 {
-  RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
   if(pcdHandle->Instance==USB)
   {
   /* USER CODE BEGIN USB_MspInit 0 */
 
   /* USER CODE END USB_MspInit 0 */
-
-  /** Initializes the peripherals clocks
-  */
-    PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USB;
-    PeriphClkInit.UsbClockSelection = RCC_USBCLKSOURCE_HSI48;
-    if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
-    {
-      Error_Handler();
-    }
-
     /* Peripheral clock enable */
     __HAL_RCC_USB_CLK_ENABLE();
 
     /* Peripheral interrupt init */
-    HAL_NVIC_SetPriority(USB_LP_IRQn, 0, 0);
+    HAL_NVIC_SetPriority(USB_LP_IRQn, 6, 0);
     HAL_NVIC_EnableIRQ(USB_LP_IRQn);
   /* USER CODE BEGIN USB_MspInit 1 */
 
@@ -118,7 +117,7 @@ void HAL_PCD_MspDeInit(PCD_HandleTypeDef* pcdHandle)
     HAL_NVIC_DisableIRQ(USB_LP_IRQn);
 
   /* USER CODE BEGIN USB_MspDeInit 1 */
-
+    __HAL_RCC_GPIOA_CLK_DISABLE();
   /* USER CODE END USB_MspDeInit 1 */
   }
 }
@@ -261,7 +260,7 @@ void HAL_PCD_SuspendCallback(PCD_HandleTypeDef *hpcd)
   }
   /* USER CODE END 2 */
   /* USER CODE BEGIN HAL_PCD_SuspendCallback_PostTreatment */
-
+  is_connected = false;
   /* USER CODE END HAL_PCD_SuspendCallback_PostTreatment */
 }
 
@@ -402,7 +401,7 @@ USBD_StatusTypeDef USBD_LL_Init(USBD_HandleTypeDef *pdev)
   hpcd_USB_FS.Init.dev_endpoints = 8;
   hpcd_USB_FS.Init.speed = PCD_SPEED_FULL;
   hpcd_USB_FS.Init.phy_itface = PCD_PHY_EMBEDDED;
-  hpcd_USB_FS.Init.Sof_enable = DISABLE;
+  hpcd_USB_FS.Init.Sof_enable = ENABLE;
   hpcd_USB_FS.Init.low_power_enable = DISABLE;
   hpcd_USB_FS.Init.lpm_enable = DISABLE;
   hpcd_USB_FS.Init.battery_charging_enable = DISABLE;
@@ -430,7 +429,6 @@ USBD_StatusTypeDef USBD_LL_Init(USBD_HandleTypeDef *pdev)
   /* USER CODE BEGIN RegisterCallBackFirstPart */
 
   /* USER CODE END RegisterCallBackFirstPart */
-  HAL_PCD_RegisterLpmCallback(&hpcd_USB_FS, PCDEx_LPM_Callback);
   HAL_PCD_RegisterDataOutStageCallback(&hpcd_USB_FS, PCD_DataOutStageCallback);
   HAL_PCD_RegisterDataInStageCallback(&hpcd_USB_FS, PCD_DataInStageCallback);
   HAL_PCD_RegisterIsoOutIncpltCallback(&hpcd_USB_FS, PCD_ISOOUTIncompleteCallback);
@@ -440,13 +438,13 @@ USBD_StatusTypeDef USBD_LL_Init(USBD_HandleTypeDef *pdev)
   /* USER CODE END RegisterCallBackSecondPart */
 #endif /* USE_HAL_PCD_REGISTER_CALLBACKS */
   /* USER CODE BEGIN EndPoint_Configuration */
-  HAL_PCDEx_PMAConfig((PCD_HandleTypeDef*)pdev->pData , 0x00 , PCD_SNG_BUF, 0x18);
-  HAL_PCDEx_PMAConfig((PCD_HandleTypeDef*)pdev->pData , 0x80 , PCD_SNG_BUF, 0x58);
+  HAL_PCDEx_PMAConfig(&hpcd_USB_FS, 0x00 , PCD_SNG_BUF, 0x14);
+  HAL_PCDEx_PMAConfig(&hpcd_USB_FS, 0x80 , PCD_SNG_BUF, 0x54);
   /* USER CODE END EndPoint_Configuration */
   /* USER CODE BEGIN EndPoint_Configuration_CDC */
-  HAL_PCDEx_PMAConfig((PCD_HandleTypeDef*)pdev->pData , 0x81 , PCD_SNG_BUF, 0xC0);
-  HAL_PCDEx_PMAConfig((PCD_HandleTypeDef*)pdev->pData , 0x01 , PCD_SNG_BUF, 0x110);
-  HAL_PCDEx_PMAConfig((PCD_HandleTypeDef*)pdev->pData , 0x82 , PCD_SNG_BUF, 0x100);
+  HAL_PCDEx_PMAConfig(&hpcd_USB_FS, CDC_IN_EP, PCD_SNG_BUF, 0x94);
+  HAL_PCDEx_PMAConfig(&hpcd_USB_FS, CDC_OUT_EP, PCD_SNG_BUF, 0xD4);
+  HAL_PCDEx_PMAConfig(&hpcd_USB_FS, CDC_CMD_EP, PCD_SNG_BUF, 0x114);
   /* USER CODE END EndPoint_Configuration_CDC */
   return USBD_OK;
 }
@@ -629,6 +627,8 @@ USBD_StatusTypeDef USBD_LL_SetUSBAddress(USBD_HandleTypeDef *pdev, uint8_t dev_a
 
   usb_status =  USBD_Get_USB_Status(hal_status);
 
+  is_connected = true;
+
   return usb_status;
 }
 
@@ -684,46 +684,6 @@ uint32_t USBD_LL_GetRxDataSize(USBD_HandleTypeDef *pdev, uint8_t ep_addr)
 }
 
 /**
-  * @brief  Send LPM message to user layer
-  * @param  hpcd: PCD handle
-  * @param  msg: LPM message
-  * @retval None
-  */
-#if (USE_HAL_PCD_REGISTER_CALLBACKS == 1U)
-static void PCDEx_LPM_Callback(PCD_HandleTypeDef *hpcd, PCD_LPM_MsgTypeDef msg)
-#else
-void HAL_PCDEx_LPM_Callback(PCD_HandleTypeDef *hpcd, PCD_LPM_MsgTypeDef msg)
-#endif /* USE_HAL_PCD_REGISTER_CALLBACKS */
-{
-  /* USER CODE BEGIN LPM_Callback */
-  switch (msg)
-  {
-  case PCD_LPM_L0_ACTIVE:
-    if (hpcd->Init.low_power_enable)
-    {
-      SystemClockConfig_Resume();
-
-      /* Reset SLEEPDEEP bit of Cortex System Control Register. */
-      SCB->SCR &= (uint32_t)~((uint32_t)(SCB_SCR_SLEEPDEEP_Msk | SCB_SCR_SLEEPONEXIT_Msk));
-    }
-    USBD_LL_Resume(hpcd->pData);
-    break;
-
-  case PCD_LPM_L1_ACTIVE:
-    USBD_LL_Suspend(hpcd->pData);
-
-    /* Enter in STOP mode. */
-    if (hpcd->Init.low_power_enable)
-    {
-      /* Set SLEEPDEEP bit and SleepOnExit of Cortex System Control Register. */
-      SCB->SCR |= (uint32_t)((uint32_t)(SCB_SCR_SLEEPDEEP_Msk | SCB_SCR_SLEEPONEXIT_Msk));
-    }
-    break;
-  }
-  /* USER CODE END LPM_Callback */
-}
-
-/**
   * @brief  Delays routine for the USB Device Library.
   * @param  Delay: Delay in ms
   * @retval None
@@ -760,9 +720,10 @@ void USBD_static_free(void *p)
   *         enable HSI, PLL and select PLL as system clock source.
   * @retval None
   */
-static void SystemClockConfig_Resume(void)
+void SystemClockConfig_Resume(void)
 {
-  SystemClock_Config();
+  // SystemClock_Config();
+  // USBD_Clock_Config();
 }
 /* USER CODE END 5 */
 

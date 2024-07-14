@@ -425,7 +425,8 @@ bool spiFlashTransfer(uint8_t *tx_buf, uint8_t *rx_buf, uint32_t length, uint32_
 {
   bool ret = true;
 
-  ret = spiTransferDMA(spi_ch, tx_buf, rx_buf, length, timeout);
+//  ret = spiTransferDMA(spi_ch, tx_buf, rx_buf, length, timeout);
+  ret = spiTransfer(spi_ch, tx_buf, rx_buf, length, timeout);
 
   return ret;
 }

@@ -7,7 +7,9 @@ extern "C" {
 
 #include "hw_def.h"
 
-
+//============== COMMON ===============
+#include "qbuffer.h"
+#include "util.h"
 //==============   HW   ===============
 #include "led.h"
 #include "uart.h"
@@ -20,10 +22,13 @@ extern "C" {
 #include "eeprom.h"
 #include "spi.h"
 #include "spi_flash.h"
-//#include "flash.h"
-	//============== COMMON ===============
-#include "qbuffer.h"
-#include "util.h"
+#include "can.h"
+#include "usb.h"
+#include "cdc.h"
+
+
+
+
 
 bool hwInit(void);
 
