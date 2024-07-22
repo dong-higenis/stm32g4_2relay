@@ -130,7 +130,7 @@ bool qspiRead(uint32_t addr, uint8_t *p_data, uint32_t length)
   uint8_t ret;
 
 
-  if (qspiGetXipMode() == false)
+  if (qspiGetXipMode() == true)
   {
     return false;
   }
