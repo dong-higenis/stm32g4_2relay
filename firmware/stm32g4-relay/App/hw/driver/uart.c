@@ -64,9 +64,9 @@ const static uart_hw_t uart_hw_tbl[UART_MAX_CH] =
   {
     {"USART1   DEBUG ", USART1,   &huart1,    &hdma_usart1_rx,  NULL, false},
     {"USART2   RS232 ", USART2,   &huart2,    &hdma_usart2_rx,  NULL, false},
-    {"USART3   RS485 ", USART3,   &huart3,    &hdma_usart3_rx,  NULL, false},
+    {"USART3   RS485 ", USART3,   &huart3,    &hdma_usart3_rx,  NULL, true},
     {"LPUART1        ", LPUART1,  &hlpuart1,  &hdma_lpuart1_rx, NULL, false},
-    {"USB      USB   ", NULL,     NULL,       NULL,             NULL,  true},
+    {"USB      USB   ", NULL,     NULL,       NULL,             NULL, false},
   };
 
 bool uartInit(void)
@@ -127,12 +127,10 @@ bool uartOpen(uint8_t ch, uint32_t baud)
     case _DEF_UART2:
     case _DEF_UART3:
     case _DEF_UART4:
-
       uart_tbl[ch].baud      = baud;
-
       uart_tbl[ch].p_huart   = uart_hw_tbl[ch].p_huart;
       uart_tbl[ch].p_hdma_rx = uart_hw_tbl[ch].p_hdma_rx;
-      uart_tbl[ch].p_huart->Instance = uart_hw_tbl[ch].p_uart;    
+      uart_tbl[ch].p_huart->Instance = uart_hw_tbl[ch].p_uart;
 
       uart_tbl[ch].p_huart->Init.BaudRate       = baud;
       uart_tbl[ch].p_huart->Init.WordLength     = UART_WORDLENGTH_8B;
@@ -145,9 +143,7 @@ bool uartOpen(uint8_t ch, uint32_t baud)
       uart_tbl[ch].p_huart->Init.ClockPrescaler = UART_PRESCALER_DIV1;
       uart_tbl[ch].p_huart->AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
 
-
       qbufferCreate(&uart_tbl[ch].qbuffer, &uart_tbl[ch].rx_buf[0], UART_RX_BUF_LENGTH);
-
 
       __HAL_RCC_DMA1_CLK_ENABLE();
 
