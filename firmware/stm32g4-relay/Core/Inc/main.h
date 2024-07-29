@@ -79,6 +79,8 @@ void Error_Handler(void);
 #define U3_DE_GPIO_Port GPIOB
 #define RLY2_Pin GPIO_PIN_15
 #define RLY2_GPIO_Port GPIOB
+#define CAN_STB_Pin GPIO_PIN_10
+#define CAN_STB_GPIO_Port GPIOA
 #define SWDIO_Pin GPIO_PIN_13
 #define SWDIO_GPIO_Port GPIOA
 #define SWCLK_Pin GPIO_PIN_14

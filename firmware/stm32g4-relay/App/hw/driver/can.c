@@ -8,9 +8,9 @@
 typedef struct
 {
   uint32_t prescaler;
-  uint32_t sjw;
-  uint32_t tseg1;
-  uint32_t tseg2;
+  uint32_t sjw; // NominalSyncJumpWidth
+  uint32_t tseg1; // NominalTimeSeg1
+  uint32_t tseg2; // NominalTimeSeg2
 } can_baud_cfg_t;
 
 extern FDCAN_HandleTypeDef hfdcan1;
@@ -101,7 +101,7 @@ typedef struct
   uint32_t rx_cnt;
   uint32_t tx_cnt;
 
-  FDCAN_HandleTypeDef  hfdcan;
+  FDCAN_HandleTypeDef*  hfdcan;
   bool (*handler)(uint8_t ch, CanEvent_t evt, can_msg_t *arg);
 
   qbuffer_t q_msg;
@@ -130,8 +130,18 @@ bool canInit(void)
   uint8_t i;
 
 
+
   for(i = 0; i < CAN_MAX_CH; i++)
   {
+    switch (i)
+    {
+      case 0:
+        can_tbl[i].hfdcan = &hfdcan1;
+      break;
+      default:
+      break;
+    }
+
     can_tbl[i].is_init  = true;
     can_tbl[i].is_open  = false;
     can_tbl[i].err_code = CAN_ERR_NONE;
@@ -175,7 +185,7 @@ bool canOpen(uint8_t ch, CanMode_t mode, CanFrame_t frame, CanBaud_t baud, CanBa
   if (ch >= CAN_MAX_CH) return false;
 
 
-  p_can = &can_tbl[ch].hfdcan;
+  p_can = can_tbl[ch].hfdcan;
 
   switch(ch)
   {
@@ -252,7 +262,7 @@ bool canOpen(uint8_t ch, CanMode_t mode, CanFrame_t frame, CanBaud_t baud, CanBa
 
 
   can_tbl[ch].is_open = true;
-
+  HAL_GPIO_WritePin(CAN_STB_GPIO_Port, CAN_STB_Pin, GPIO_PIN_RESET);
 
   return ret;
 }
@@ -268,9 +278,11 @@ void canClose(uint8_t ch)
 {
   if(ch >= CAN_MAX_CH) return;
 
+  HAL_GPIO_WritePin(CAN_STB_GPIO_Port, CAN_STB_Pin, GPIO_PIN_SET);
+
   if (can_tbl[ch].is_open)
   {
-    HAL_FDCAN_DeInit(&can_tbl[ch].hfdcan);
+    HAL_FDCAN_DeInit(can_tbl[ch].hfdcan);
   }
   return;
 }
@@ -365,7 +377,7 @@ bool canConfigFilter(uint8_t ch, uint8_t index, CanIdType_t id_type, uint32_t id
   sFilterConfig.FilterID1     = id;
   sFilterConfig.FilterID2     = id_mask;
 
-  if (HAL_FDCAN_ConfigFilter(&can_tbl[ch].hfdcan, &sFilterConfig) == HAL_OK)
+  if (HAL_FDCAN_ConfigFilter(can_tbl[ch].hfdcan, &sFilterConfig) == HAL_OK)
   {
     ret = true;
   }
@@ -403,7 +415,7 @@ bool canMsgWrite(uint8_t ch, can_msg_t *p_msg, uint32_t timeout)
   if (can_tbl[ch].err_code & CAN_ERR_PASSIVE) return false;
 
 
-  p_can = &can_tbl[ch].hfdcan;
+  p_can = can_tbl[ch].hfdcan;
 
   switch(p_msg->id_type)
   {
@@ -476,8 +488,8 @@ void canRecovery(uint8_t ch)
 
   can_tbl[ch].err_code = CAN_ERR_NONE;
 
-  HAL_FDCAN_Stop(&can_tbl[ch].hfdcan);
-  HAL_FDCAN_Start(&can_tbl[ch].hfdcan);
+  HAL_FDCAN_Stop(can_tbl[ch].hfdcan);
+  HAL_FDCAN_Start(can_tbl[ch].hfdcan);
 
   can_tbl[ch].recovery_cnt++;
 }
@@ -542,7 +554,7 @@ uint16_t canGetRxErrCount(uint8_t ch)
 
   if(ch > CAN_MAX_CH) return 0;
 
-  status = HAL_FDCAN_GetErrorCounters(&can_tbl[ch].hfdcan, &error_counters);
+  status = HAL_FDCAN_GetErrorCounters(can_tbl[ch].hfdcan, &error_counters);
   if (status == HAL_OK)
   {
     ret = error_counters.RxErrorCnt;
@@ -559,7 +571,7 @@ uint16_t canGetTxErrCount(uint8_t ch)
 
   if(ch > CAN_MAX_CH) return 0;
 
-  status = HAL_FDCAN_GetErrorCounters(&can_tbl[ch].hfdcan, &error_counters);
+  status = HAL_FDCAN_GetErrorCounters(can_tbl[ch].hfdcan, &error_counters);
   if (status == HAL_OK)
   {
     ret = error_counters.TxErrorCnt;
@@ -593,7 +605,7 @@ uint32_t canGetState(uint8_t ch)
 {
   if(ch > CAN_MAX_CH) return 0;
 
-  return HAL_FDCAN_GetState(&can_tbl[ch].hfdcan);
+  return HAL_FDCAN_GetState(can_tbl[ch].hfdcan);
 }
 
 void canAttachRxInterrupt(uint8_t ch, bool (*handler)(uint8_t ch, CanEvent_t evt, can_msg_t *arg))
@@ -632,7 +644,8 @@ void canRxFifoCallback(uint8_t ch, FDCAN_HandleTypeDef *hfdcan)
       rx_buf->id      = rx_header.Identifier;
       rx_buf->id_type = CAN_EXT;
     }
-    rx_buf->length = dlc_len_tbl[(rx_header.DataLength >> 16) & 0x0F];
+    //rx_buf->length = dlc_len_tbl[(rx_header.DataLength >> 16) & 0x0F];
+    rx_buf->length = dlc_len_tbl[(rx_header.DataLength) & 0x0F];
     rx_buf->dlc = canGetDlc(rx_buf->length);
 
     if (rx_header.FDFormat == FDCAN_FD_CAN)
@@ -695,7 +708,7 @@ void canErrUpdate(uint8_t ch)
   CanEvent_t can_evt = CAN_EVT_NONE;
   
   
-  HAL_FDCAN_GetProtocolStatus(&can_tbl[ch].hfdcan, &protocol_status);
+  HAL_FDCAN_GetProtocolStatus(can_tbl[ch].hfdcan, &protocol_status);
 
   if (protocol_status.ErrorPassive)
   {
@@ -776,7 +789,7 @@ void canInfoPrint(uint8_t ch)
       canPrintf("250\n");
       break;
     case CAN_500K:
-      canPrintf("250\n");
+      canPrintf("500\n");
       break;
     case CAN_1M:
       canPrintf("1M\n");
@@ -798,7 +811,7 @@ void canInfoPrint(uint8_t ch)
       canPrintf("250\n");
       break;
     case CAN_500K:
-      canPrintf("250\n");
+      canPrintf("500\n");
       break;
     case CAN_1M:
       canPrintf("1M\n");
@@ -943,7 +956,7 @@ void cliCan(cli_args_t *args)
   {
     bool can_ret;
 
-    can_ret = canOpen(_DEF_CAN1, CAN_LOOPBACK, CAN_FD_BRS, CAN_1M, CAN_5M); 
+    can_ret = canOpen(_DEF_CAN1, CAN_NORMAL, CAN_CLASSIC, CAN_500K, CAN_500K);
     cliPrintf("canOpen() : %s\n", can_ret ? "True":"False");
     canInfoPrint(_DEF_CAN1);
     ret = true;
