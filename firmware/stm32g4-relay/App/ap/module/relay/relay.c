@@ -105,7 +105,7 @@ void cliRelay(cli_args_t *args)
 
     while(cliKeepLoop())
     {
-      cliPrintf("relay ch[%d] state : %s\n", ch, relayGetState(ch) == true ? "ON" : "OFF");
+      cliPrintf("relay ch[%d] state : %s\n", ch, relayGetState(ch) == relay_tbl[ch].on_state ? "ON" : "OFF");
       delay(100);
     }
 
@@ -118,7 +118,7 @@ void cliRelay(cli_args_t *args)
   {
     uint8_t ch;
 
-    ch   = (uint8_t)args->getData(1)-1;
+    ch   = (uint8_t)args->getData(1);
     const char* set_state = args->getStr(2);
     bool on_state = (strcmp(set_state, "on") == 0);
     bool off_state = (strcmp(set_state, "off") == 0);
@@ -136,7 +136,7 @@ void cliRelay(cli_args_t *args)
       ret = false;
     }
 
-    cliPrintf("relay ch%d %s\n", (ch+1), on_state ? "on" : off_state ? "off" : "undefined cmd");
+    cliPrintf("relay ch%d %s\n", ch, on_state ? "on" : off_state ? "off" : "undefined cmd");
     ret = true;
   }
 
@@ -144,7 +144,7 @@ void cliRelay(cli_args_t *args)
   {
     uint8_t ch;
 
-    ch   = (uint8_t)args->getData(1)-1;
+    ch   = (uint8_t)args->getData(1);
 
     bool pre_state;
     bool cur_state;
@@ -155,7 +155,7 @@ void cliRelay(cli_args_t *args)
 
     cur_state = relayGetState(ch);
 
-    cliPrintf("relay ch%d  %s -> %s\n", (ch+1), pre_state ? "ON" : "OFF", cur_state ? "ON" : "OFF");
+    cliPrintf("relay ch%d  %s -> %s\n", ch, pre_state ? "ON" : "OFF", cur_state ? "ON" : "OFF");
 
 
     ret = true;
@@ -164,9 +164,9 @@ void cliRelay(cli_args_t *args)
   if (ret != true)
   {
     cliPrintf("relay info\n");
-    cliPrintf("relay read   ch[1~%d]\n", RELAY_CH_MAX);
-    cliPrintf("relay write  ch[1~%d] on:off\n", RELAY_CH_MAX);
-    cliPrintf("relay toggle ch[1~%d] \n", RELAY_CH_MAX);
+    cliPrintf("relay read   ch[0~%d]\n", RELAY_CH_MAX-1);
+    cliPrintf("relay write  ch[0~%d] on:off\n", RELAY_CH_MAX-1);
+    cliPrintf("relay toggle ch[0~%d] \n", RELAY_CH_MAX-1);
   }
 }
 #endif
