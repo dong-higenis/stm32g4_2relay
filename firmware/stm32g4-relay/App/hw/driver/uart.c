@@ -51,18 +51,22 @@ static bool is_init = false;
 __attribute__((section(".non_cache")))
 static uart_tbl_t uart_tbl[UART_MAX_CH];
 
+extern UART_HandleTypeDef hlpuart1;
 extern UART_HandleTypeDef huart1;
 extern UART_HandleTypeDef huart2;
 extern UART_HandleTypeDef huart3;
+extern DMA_HandleTypeDef hdma_lpuart1_rx;
 extern DMA_HandleTypeDef hdma_usart1_rx;
 extern DMA_HandleTypeDef hdma_usart2_rx;
 extern DMA_HandleTypeDef hdma_usart3_rx;
 
 const static uart_hw_t uart_hw_tbl[UART_MAX_CH] = 
   {
-    {"USART1 DEBUG ", USART1, &huart1, &hdma_usart1_rx, NULL, false},
-    {"USART2 RS232 ", USART2, &huart2, &hdma_usart2_rx, NULL, false},
-    {"USART3 RS485 ", USART3, &huart3, &hdma_usart3_rx, NULL, false},
+    {"USART1   DEBUG ", USART1,   &huart1,    &hdma_usart1_rx,  NULL, false},
+    {"USART2   RS232 ", USART2,   &huart2,    &hdma_usart2_rx,  NULL, false},
+    {"USART3   RS485 ", USART3,   &huart3,    &hdma_usart3_rx,  NULL, true},
+    {"LPUART1        ", LPUART1,  &hlpuart1,  &hdma_lpuart1_rx, NULL, false},
+    {"USB      USB   ", NULL,     NULL,       NULL,             NULL, false},
   };
 
 bool uartInit(void)
@@ -70,7 +74,16 @@ bool uartInit(void)
   for (int i=0; i<UART_MAX_CH; i++)
   {
     uart_tbl[i].is_open = false;
-    uart_tbl[i].baud = 115200;
+
+    if (i == _DEF_UART4)
+    {
+      uart_tbl[i].baud = 209700;
+    }
+    else
+    {
+      uart_tbl[i].baud = 115200;
+    }
+
     uart_tbl[i].rx_cnt = 0;
     uart_tbl[i].tx_cnt = 0;    
   }
@@ -111,12 +124,13 @@ bool uartOpen(uint8_t ch, uint32_t baud)
   switch(ch)
   {
     case _DEF_UART1:
-
+    case _DEF_UART2:
+    case _DEF_UART3:
+    case _DEF_UART4:
       uart_tbl[ch].baud      = baud;
-
       uart_tbl[ch].p_huart   = uart_hw_tbl[ch].p_huart;
       uart_tbl[ch].p_hdma_rx = uart_hw_tbl[ch].p_hdma_rx;
-      uart_tbl[ch].p_huart->Instance = uart_hw_tbl[ch].p_uart;    
+      uart_tbl[ch].p_huart->Instance = uart_hw_tbl[ch].p_uart;
 
       uart_tbl[ch].p_huart->Init.BaudRate       = baud;
       uart_tbl[ch].p_huart->Init.WordLength     = UART_WORDLENGTH_8B;
@@ -129,9 +143,7 @@ bool uartOpen(uint8_t ch, uint32_t baud)
       uart_tbl[ch].p_huart->Init.ClockPrescaler = UART_PRESCALER_DIV1;
       uart_tbl[ch].p_huart->AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
 
-
       qbufferCreate(&uart_tbl[ch].qbuffer, &uart_tbl[ch].rx_buf[0], UART_RX_BUF_LENGTH);
-
 
       __HAL_RCC_DMA1_CLK_ENABLE();
 
@@ -161,8 +173,10 @@ bool uartOpen(uint8_t ch, uint32_t baud)
       }
       break;
 
-    case _DEF_UART2:
-		case _DEF_UART3:
+    case _DEF_UART5:
+      uart_tbl[ch].baud    = baud;
+      uart_tbl[ch].is_open = true;
+      ret = true;
 			break;
   }
 
@@ -186,18 +200,40 @@ uint32_t uartAvailable(uint8_t ch)
   switch(ch)
   {
     case _DEF_UART1:
+    case _DEF_UART2:
+    case _DEF_UART3:
+    case _DEF_UART4:
 		{
 			uart_tbl[ch].qbuffer.in = (uart_tbl[ch].qbuffer.len - ((DMA_Channel_TypeDef *)uart_tbl[ch].p_hdma_rx->Instance)->CNDTR);
 			ret = qbufferAvailable(&uart_tbl[ch].qbuffer);
 		}
-		break;
+		  break;
 
-    case _DEF_UART2:
-    case _DEF_UART3:
-
+    case _DEF_UART5:
+      ret = cdcAvailable();
       break;
   }
 
+  return ret;
+}
+
+bool uartIsOpen(uint8_t ch)
+{
+  bool ret = false;
+
+  switch(ch)
+  {
+    case _DEF_UART1:
+    case _DEF_UART2:
+    case _DEF_UART3:
+    case _DEF_UART4:
+      ret = uart_tbl[ch].is_open = true;
+      break;   
+
+    case _DEF_UART5:
+      ret = cdcIsConnect();
+      break;   
+  }
   return ret;
 }
 
@@ -227,10 +263,13 @@ uint8_t uartRead(uint8_t ch)
   switch(ch)
   {
     case _DEF_UART1:
-      qbufferRead(&uart_tbl[ch].qbuffer, &ret, 1);
-      break;
     case _DEF_UART2:
     case _DEF_UART3:
+    case _DEF_UART4:
+      qbufferRead(&uart_tbl[ch].qbuffer, &ret, 1);
+      break;
+    case _DEF_UART5:
+      ret = cdcRead();
       break;
   }
   uart_tbl[ch].rx_cnt++;
@@ -246,14 +285,16 @@ uint32_t uartWrite(uint8_t ch, uint8_t *p_data, uint32_t length)
   switch(ch)
   {
     case _DEF_UART1:
+    case _DEF_UART2:
+    case _DEF_UART3:
+    case _DEF_UART4:
     	if (HAL_UART_Transmit(uart_tbl[ch].p_huart, p_data, length, 100) == HAL_OK)
 			{
 				ret = length;
 			}
     	break;
-    case _DEF_UART2:
-    case _DEF_UART3:
-
+    case _DEF_UART5:
+      ret = cdcWrite(p_data, length);
       break;
   }
   uart_tbl[ch].tx_cnt += ret;

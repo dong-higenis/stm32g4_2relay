@@ -6,13 +6,13 @@
 
 #ifdef _USE_HW_SPI_FLASH
 
-#ifdef _USE_HW_GPIO
-#define SPI_CS_L()    gpioPinWrite(_PIN_GPIO_SPI_FLASH_CS, _DEF_LOW)
-#define SPI_CS_H()    gpioPinWrite(_PIN_GPIO_SPI_FLASH_CS, _DEF_HIGH)
-#else
-#define SPI_CS_L()    HAL_GPIO_WritePin(SPIFLASH_CS_GPIO_Port, SPIFLASH_CS_Pin, GPIO_PIN_RESET)
-#define SPI_CS_H()    HAL_GPIO_WritePin(SPIFLASH_CS_GPIO_Port, SPIFLASH_CS_Pin, GPIO_PIN_SET)
-#endif
+//#ifdef _USE_HW_GPIO
+//#define SPI_CS_L()    gpioPinWrite(_PIN_GPIO_SPI_FLASH_CS, _DEF_LOW)
+//#define SPI_CS_H()    gpioPinWrite(_PIN_GPIO_SPI_FLASH_CS, _DEF_HIGH)
+//#else
+#define SPI_CS_L()    HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET)
+#define SPI_CS_H()    HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET)
+//#endif
 
 static bool is_init = false;
 static uint8_t spi_ch = _DEF_SPI1;
@@ -79,7 +79,7 @@ bool spiFlashReset(void)
   bool ret = true;
 
 
-  if (spiBegin(spi_ch) == false)
+  if (spiBegin(spi_ch) == true)
   {
     return false;
   }
@@ -425,7 +425,8 @@ bool spiFlashTransfer(uint8_t *tx_buf, uint8_t *rx_buf, uint32_t length, uint32_
 {
   bool ret = true;
 
-  ret = spiTransferDMA(spi_ch, tx_buf, rx_buf, length, timeout);
+//  ret = spiTransferDMA(spi_ch, tx_buf, rx_buf, length, timeout);
+  ret = spiTransfer(spi_ch, tx_buf, rx_buf, length, timeout);
 
   return ret;
 }

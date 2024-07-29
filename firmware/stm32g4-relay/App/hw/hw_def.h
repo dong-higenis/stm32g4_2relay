@@ -17,10 +17,12 @@
 #define      HW_LED_MAX_CH          1
 
 #define _USE_HW_UART
-#define      HW_UART_MAX_CH         3
+#define      HW_UART_MAX_CH         5
 #define      HW_UART_CH_DEBUG       _DEF_UART1
 #define      HW_UART_CH_RS232       _DEF_UART2
 #define      HW_UART_CH_RS485       _DEF_UART3
+#define      HW_UART_CH_LPUART      _DEF_UART4
+#define      HW_UART_CH_USB         _DEF_UART5
 
 #define _USE_HW_CLI
 #define      HW_CLI_CMD_LIST_MAX    32
@@ -31,6 +33,10 @@
 #define _USE_HW_CLI_GUI
 #define      HW_CLI_GUI_WIDTH       80
 #define      HW_CLI_GUI_HEIGHT      24
+
+#define _USE_HW_CAN
+#define      HW_CAN_MAX_CH          1
+#define      HW_CAN_MSG_RX_BUF_MAX  32
 
 #define _USE_HW_LOG
 #define      HW_LOG_CH              HW_UART_CH_DEBUG
@@ -44,7 +50,7 @@
 #define      HW_SWTIMER_MAX_CH      8
 
 #define _USE_HW_GPIO
-#define      HW_GPIO_MAX_CH         3
+#define      HW_GPIO_MAX_CH         1
 
 #define _USE_HW_SPI
 #define      HW_SPI_MAX_CH          1
@@ -67,6 +73,11 @@
 #elif defined (HW_EEPROM_24LC256I)
 #define           HW_EEPROM_MAX_SIZE     (32*1024)
 #endif
+
+#define _USE_HW_USB
+#define _USE_HW_CDC
+#define      HW_USE_CDC             1
+#define      HW_USE_MSC             0
 
 //#define _USE_HW_PWM
 //#define      HW_PWM_MAX_CH          1

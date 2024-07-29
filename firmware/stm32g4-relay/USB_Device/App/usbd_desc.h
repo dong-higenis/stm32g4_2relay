@@ -1,13 +1,13 @@
 /* USER CODE BEGIN Header */
 /**
   ******************************************************************************
-  * @file           : usbd_desc.c
-  * @version        : v3.0_Cube
-  * @brief          : Header for usbd_conf.c file.
+  * @file           USB_Device/CDC_Standalone/USB_Device/App/usbd_desc.h
+  * @author         MCD Application Team
+  * @brief          Header for usbd_desc.c file.
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2024 STMicroelectronics.
+  * Copyright (c) 2019 STMicroelectronics.
   * All rights reserved.
   *
   * This software is licensed under terms that can be found in the LICENSE file
@@ -50,7 +50,7 @@
 #define         DEVICE_ID2          (UID_BASE + 0x4)
 #define         DEVICE_ID3          (UID_BASE + 0x8)
 
-#define         USB_SIZ_STRING_SERIAL       0x1A
+#define         USB_SIZ_STRING_SERIAL       (0x1A)
 
 /* USER CODE BEGIN EXPORTED_CONSTANTS */
 

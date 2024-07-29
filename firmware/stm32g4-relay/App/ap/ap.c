@@ -6,6 +6,8 @@ void apInit (void)
 {
   cliOpen(HW_UART_CH_DEBUG, 115200);
   logBoot(false);
+
+  relayInit();
 }
 
 void apMain (void)

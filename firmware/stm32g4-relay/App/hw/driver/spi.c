@@ -28,7 +28,6 @@ typedef struct
 spi_t spi_tbl[SPI_MAX_CH];
 
 extern SPI_HandleTypeDef hspi1;
-extern DMA_HandleTypeDef hdma_spi1_rx;
 
 
 
@@ -61,7 +60,6 @@ bool spiBegin(uint8_t ch)
   {
     case _DEF_SPI1:
       p_spi->h_spi = &hspi1;
-      p_spi->h_dma_rx = &hdma_spi1_rx;
 
       p_spi->h_spi->Instance              = SPI1;
       p_spi->h_spi->Init.Mode             = SPI_MODE_MASTER;
@@ -75,10 +73,7 @@ bool spiBegin(uint8_t ch)
       p_spi->h_spi->Init.TIMode           = SPI_TIMODE_DISABLE;
       p_spi->h_spi->Init.CRCCalculation   = SPI_CRCCALCULATION_DISABLE;
       p_spi->h_spi->Init.CRCPolynomial    = 7;
-      p_spi->h_spi->Init.NSSPMode         = SPI_NSS_PULSE_ENABLE;
-      p_spi->h_spi->Init.CRCLength        = SPI_CRC_LENGTH_DATASIZE;
-
-      __HAL_RCC_DMA1_CLK_ENABLE();
+      p_spi->h_spi->Init.NSSPMode         = SPI_NSS_PULSE_DISABLE;
 
       HAL_SPI_DeInit(p_spi->h_spi);
       if (HAL_SPI_Init(p_spi->h_spi) == HAL_OK)

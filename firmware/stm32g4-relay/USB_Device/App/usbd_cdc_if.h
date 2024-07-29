@@ -2,17 +2,18 @@
 /**
   ******************************************************************************
   * @file           : usbd_cdc_if.h
-  * @version        : v3.0_Cube
+  * @version        : v1.0_Cube
   * @brief          : Header for usbd_cdc_if.c file.
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2024 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
+  * All rights reserved.</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * This software component is licensed by ST under Ultimate Liberty license
+  * SLA0044, the "License"; You may not use this file except in compliance with
+  * the License. You may obtain a copy of the License at:
+  *                             www.st.com/SLA0044
   *
   ******************************************************************************
   */
@@ -90,7 +91,7 @@
   */
 
 /** CDC Interface callback. */
-extern USBD_CDC_ItfTypeDef USBD_Interface_fops_FS;
+extern USBD_CDC_ItfTypeDef USBD_CDC_fops;
 
 /* USER CODE BEGIN EXPORTED_VARIABLES */
 
@@ -105,11 +106,16 @@ extern USBD_CDC_ItfTypeDef USBD_Interface_fops_FS;
   * @{
   */
 
-uint8_t CDC_Transmit_FS(uint8_t* Buf, uint16_t Len);
 
-/* USER CODE BEGIN EXPORTED_FUNCTIONS */
 
-/* USER CODE END EXPORTED_FUNCTIONS */
+bool     cdcIfInit(void);
+uint32_t cdcIfAvailable(void);
+uint8_t  cdcIfRead(void);
+uint32_t cdcIfGetBaud(void);
+uint32_t cdcIfWrite(uint8_t *p_data, uint32_t length);
+bool     cdcIfIsConnected(void);
+uint8_t  cdcIfGetType(void);
+
 
 /**
   * @}
@@ -129,3 +135,4 @@ uint8_t CDC_Transmit_FS(uint8_t* Buf, uint16_t Len);
 
 #endif /* __USBD_CDC_IF_H__ */
 
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
